@@ -1,0 +1,9 @@
+- list has indexing but set does not (so we can't access set like s[0])
+- set also doesn't maintain any order (it can change each time)
+
+# map-reduce in python
+    - map
+    - filter
+    - reduce
+
+- finding sum o squares of 
