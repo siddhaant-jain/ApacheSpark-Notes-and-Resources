@@ -146,4 +146,86 @@
     ```
 ---------------------------------
 
-### Read data from text files
+### Spark SQL
+- to open spark sql shell
+    > spark-sql --master yarn --conf spark.ui.port=12901 --conf spark.sql.warehouse.dir=/user/${USER}/warehouse
+
+- to check current database
+    ```sql
+    SELECT current_database();
+    ```
+
+- to create new database
+    ```sql
+    CREATE DATABASE db_name;
+    USE db_name;
+    SELECT current_database();
+    ```
+
+- we can also provide the database which we wan't to use while conencting to spark-sql
+    > spark-sql --master yarn --conf spark.ui.port=12901 --conf spark.sql.warehouse.dir=/user/${USER}/warehouse --database db_name
+
+- we can use 'SET' command to see any runtime properties. For eg. spark.sql.warehouse.dir is a runtime property. Below command will give the value which we have given while starting spark-sql shell
+    >SET spark.sql.warehouse.dir
+- if we simply write SET without any other value, it will simply give all runtime properties along with their values. If some property is having the edfault value it might not show in the list
+
+- we can check catalogImplementation also by saying:
+    > SET spark.sql.catalogImplementation
+- it will give the value of hive is spark sql is reading from hive tables
+
+- for running any linux commad or hdfs command from spark-sql shell, we can simply write exclaimation mark followed by the query, followed by semi-colon. Eg.
+    > !ls -ltr /path;
+> we can add .config("spark.ui.port", "0") while creating sparkSession object same as --conf
+
+### Spark warehouse directory
+- a database in spark sql is nothing but a directory in underlying file system like hdfs with .db extension.
+- spark metastore table also is a directory in underlying file system like hdfs.
+- a partition of spark metastore table also is a directory in underlying file system like hdfs under table directory
+- all tables in a db are also sub-directories inside db dir.
+- warehouse directory is the base directory where directories related to databased and tables go by default
+- reference for hive queries : https://cwiki.apache.org/confluence/display/hive/languagemanual
+
+- CREATE DB
+    ```sql
+    CREATE DATABASE db_name;
+    CREATE DATABASE IF NOT EXISTS db_name;
+    ```
+
+- CREATE DB at a specific location
+    ```sql
+    CREATE DATABASE db_name LOCATION '/foldername/folder2name/soOn/dbname.db';
+    ```
+
+- SHOW list of all db
+    ```sql
+    SHOW databases;
+    USE db_name;
+    ```
+
+- Drop empty database
+    ```sql
+    DROP DATABASE db_name;
+    DROP DATABASE IF EXISTS db_name;
+    ```
+
+- Drop non-empty database
+    ```sql
+    DROP DATABASE db_name CASCADE;
+    ```
+
+### Get Metadata of tables
+- metadata is generally stored in relation databases which can be accessed by query engines like spark sql to be able to serve our queries. It has a normalized data model.
+- it is used for syntax and semantic checks by query engines. Which means it validates whether table name, cloumn names etc. are correct in the query or not.
+- if hive is underlying db service used in spark sql than spark metastore uses hive metastore only. 
+
+- to get just column names and data types
+    ```sql
+    USE db_name;
+    DESCRIBE tableName
+    ```
+
+- to get more details like db, created time, last access time, owner, type(MANAGED/EXTERNAL), location, i/p format, o/p format etc
+     ```sql
+    USE db_name;
+    DESCRIBE EXTENDED tableName
+    ```
