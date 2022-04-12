@@ -182,6 +182,7 @@
 - spark metastore table also is a directory in underlying file system like hdfs.
 - a partition of spark metastore table also is a directory in underlying file system like hdfs under table directory
 - all tables in a db are also sub-directories inside db dir.
+- when we load data into a table, it simply copies the file in table directory (for managed tables)
 - warehouse directory is the base directory where directories related to databased and tables go by default
 - reference for hive queries : https://cwiki.apache.org/confluence/display/hive/languagemanual
 
@@ -229,3 +230,17 @@
     USE db_name;
     DESCRIBE EXTENDED tableName
     ```
+
+### Spark sql major type of operations
+- Selection or projection (select clause)
+- filtering (where clause)
+- joins
+- aggregations
+- sorting
+- analytics functions (ranking, windowing func)
+
+**Unable to run hive on spark sql bcz of incorrect installation**
+- Link on how to install [Hadoop] (https://towardsdatascience.com/installing-hadoop-3-2-1-single-node-cluster-on-windows-10-ac258dd48aef)
+
+- Link on how to install [Hive](https://towardsdatascience.com/installing-apache-hive-3-1-2-on-windows-10-70669ce79c79) on windows
+
