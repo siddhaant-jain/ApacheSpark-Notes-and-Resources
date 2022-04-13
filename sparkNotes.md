@@ -244,3 +244,14 @@
 
 - Link on how to install [Hive](https://towardsdatascience.com/installing-apache-hive-3-1-2-on-windows-10-70669ce79c79) on windows
 
+**it started runnig without doing all this. Simply copy hadoop.dll file present in winutils/bin folder to windows/system32 folder and two below mentioned lines in python code, Delete any existing metastore_db and spark-warehouse folder after closing everything else. Then restart the system, it should start working**
+
+```python
+import os
+import sys
+os.environ["HADOOP_HOME"] = "C:\\Users\\SkJain\\Downloads\\Compressed\\winutils-master\\hadoop-3.2.2"
+sys.path.append('C:\\Users\\SkJain\\Downloads\\Compressed\\winutils-master\\hadoop-3.2.2\\bin')
+print(sys.path)
+```
+
+### Spark ddl and dml commands (in notebooks)
