@@ -3,6 +3,7 @@
 - from spark 2., rdd are part of kernel and spark sql, dataframes and datasets are now core mmodules of spark
 - mllib, spark streamin and graphx are built over it
 
+- datasets taken from: https://github.com/dgadiraju/data
 
 ### Setup pyspark
 - install anaconda
