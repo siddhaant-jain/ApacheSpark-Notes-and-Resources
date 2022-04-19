@@ -255,4 +255,7 @@ sys.path.append('C:\\Users\\SkJain\\Downloads\\Compressed\\winutils-master\\hado
 print(sys.path)
 ```
 
+**createDataframe API of spark fails to run**
+- solution: os.environ["PYSPARK_PYTHON"] = "python" (add this to code)
+
 ### Spark ddl and dml commands (in notebooks)
