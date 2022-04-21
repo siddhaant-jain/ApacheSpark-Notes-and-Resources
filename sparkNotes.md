@@ -259,3 +259,24 @@ print(sys.path)
 - solution: os.environ["PYSPARK_PYTHON"] = "python" (add this to code)
 
 ### Spark ddl and dml commands (in notebooks)
+
+
+- to check run time arguments passed to code we can use sys library
+- it has a argv attribute which is of type list and contains all runtime arguments
+- argv[0] contains name or path of file which is running
+    ```python
+    import sys
+    sys.argv[1]
+    ```
+
+
+check repartition vs coalsce
+
+- to run in prod
+    - create a zip of all python files except app.py (driver code)
+    - ensure all environment variables are set corrctly
+    - and all data paths are configured correctly
+    - then run the command
+    ```
+    spark-submit --master yarn --py-files zipfilepath app.py
+    ```
