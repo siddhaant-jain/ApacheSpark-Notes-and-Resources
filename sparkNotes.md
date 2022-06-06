@@ -470,3 +470,10 @@ check repartition vs coalsce
        )
     ```
 - Window functions in detail: https://medium.com/towards-data-science/a-dive-into-pyspark-window-functions-a090aee4ff23
+
+
+- file formats: https://medium.com/@ghoshsiddharth25/hdfs-storage-formats-what-when-to-use-52f150d5de1b
+
+- spark execution plan: https://medium.com/@omarlaraqui/a-beginners-guide-to-spark-execution-plan-b11f441005c9
+
+- partitioning and bucketing: https://selectfrom.dev/apache-spark-partitioning-bucketing-3fd350816911
