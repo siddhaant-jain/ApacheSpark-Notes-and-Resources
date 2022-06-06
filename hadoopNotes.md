@@ -1,3 +1,11 @@
+- four V's of Big Data:
+    - Voume
+    - Velocity
+    - Variety
+    - veracity (uncertainity of data, data quality)
+
+- check image of hadoop eccosystem (1.0 (before yarn) and 2.0(after yarn)) from google
+
 - important configuaration files to study for hadoop, yarn, hive and spark:
     - /etc/hadoop/core-site.xml
     - /etc/hadoop/hdfs-site.xml
@@ -141,10 +149,19 @@
 - we can pass individual properties using -D or multiple properties in xml file using --conf
     > hdfs dfs -Ddfs.blocksize=64M -Ddfs.replication=3 -put localFilePath hadoopFilePath
 
+### hdfs deomons
+- namenode (master)
+    - manages meta-data, file blocks
+    - it must be running at all time, if namenode crashes then cluster is down(hence single point of failure)
+- secondary namenode
+    - performs house-keeping job
+    - not used for high-availability
+    - not a backup for namenode
+- datanodes (slaves)
+    - stores and retrieves data blocks
+    - reports to namenode (send hearbeat to namenode every 3 seconds via TCP)
+    - runs on many machines
 
-https://towardsdatascience.com/complete-guide-to-spark-and-pyspark-setup-for-data-science-374ecd8d1eea
-https://github.com/dgadiraju/retail_db
-https://github.com/siddhaant-jain/MongoDB-Notes-and-Resources
-
-https://www.sarthaksarbahi.com/interview-amex
-file:///C:/Users/SkJain/Downloads/resume---sarthak-sarbahi-Aq2QX4X19Vsqe8xj.pdf
+### map reduce demons
+- job tracker (runs on name node)
+- task trackers (runs on data nodes)

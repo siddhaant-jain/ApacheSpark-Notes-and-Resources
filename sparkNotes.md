@@ -432,3 +432,41 @@ check repartition vs coalsce
 
 - now using it with spark-submit with hdfs file and deploy mode cluster
     > spark-submit --master yarn --deploy-mode cluster --properties-file /path/sparkAppName.conf --py-files hdfsNamenodeUri/pathOfZipFolder hdfsNamenodeUri/pythonFilePath
+
+
+- movielens [dataset](https://grouplens.org/datasets/movielens/) for practice
+
+- broadcast variable: In PySpark RDD and DataFrame, Broadcast variables are read-only shared variables that are cached and available on all nodes in a cluster in-order to access or use by the tasks. Instead of sending this data along with every task, PySpark distributes broadcast variables to the workers using efficient broadcast algorithms to reduce communication costs
+- Note that broadcast variables are not sent to executors with sc.broadcast(variable) call instead, they will be sent to executors when they are first used
+- The broadcasted data is cache in serialized format and deserialized before executing each task
+
+
+### User defined functions (udf)
+- to importe: from pyspark.sql.functions import udf
+- create a normal python function (say abc)
+- then write udfVariable = udf(lambda x: abc(x))
+- df.withColumn('colName', udfVariable(col('colName')))
+
+### Accumulators
+- The PySpark Accumulator is a shared variable that is used with RDD and DataFrame to perform sum and counter operations similar to Map-reduce counters. 
+- These variables are shared by all executors to update and add information through aggregation or computative operations.
+- Accumulators are write-only and initialize once variables where only tasks that are running on workers are allowed to update and updates from the workers get propagated automatically to the driver program. But, only the driver program is allowed to access the Accumulator variable using the value property.
+- to create accumulator: sparkContext.accumulator()
+- We can create Accumulators in PySpark for primitive types int and float. Users can also create Accumulators for custom types using AccumulatorParam class of PySpark.
+- it has two params .add(x), .value
+
+### Create a temp sql table on a dataframe to run sql query
+- dataframeName.createOrReplaceTempView("tempTableName")
+- now we can do spark.sql("SELECT * FROM tempTableName")
+
+### Window functions in pyspark
+    ```python
+    from pyspark.sql.window import Window
+    # get all columns for the record with highest grade in each year
+    each_year = Window.partitionBy(F.col('year'))
+    res = (df.withColumn('highest_grade', F.max(F.col('grade')).over(each_year))
+       .where(F.col('highest_grade')==F.col('grade'))
+       .drop(F.col('highest_grade'))
+       )
+    ```
+- Window functions in detail: https://medium.com/towards-data-science/a-dive-into-pyspark-window-functions-a090aee4ff23
