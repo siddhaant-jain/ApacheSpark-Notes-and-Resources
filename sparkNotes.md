@@ -472,7 +472,44 @@ check repartition vs coalsce
 - Window functions in detail: https://medium.com/towards-data-science/a-dive-into-pyspark-window-functions-a090aee4ff23
 
 
-- file formats: https://medium.com/@ghoshsiddharth25/hdfs-storage-formats-what-when-to-use-52f150d5de1b
+### File formats in Big Data
+    - file formats: https://medium.com/@ghoshsiddharth25/hdfs-storage-formats-what-when-to-use-52f150d5de1b
+
+    - CSV: CSV is a row-based file format,using plain text. CSV format is not fully standardized, and files may use separators other than commas, such as tabs or spaces. CSV files are only splittable when it is a raw, uncompressed file or when splittable compression format is used such as bzip2 or lzo 
+        - Pros: human-readable and easy to edit manually, provides a simple scheme, can be processed by almost all existing applications, easy to implement and parse, CSV is compact (headers are written only once unlike json or XML).
+        - Cons: allows to work with flat data. Complex data structures have to be processed separately from the format; No support for column types. No difference between text and numeric columns; no standard way to present binary data; Poor support for special characters; Lack of a universal standard.
+
+    - JSON: presented as key-value pairs in a partially structured format.it can store data in a hierarchical format and is user readable. typically much smaller than XML therefore more commonly used in network communication (REST API), 
+        - PROS: supports hierarchical structures, simplifying the storage of related data in a single document and presenting complex relationships; simplified JSON serialization libraries or built-in support for JSON serialization/deserialization in most languages; widely used file format for NoSQL databases such as MongoDB, Couchbase and Azure Cosmos DB;Built-in support in most modern tools;
+        - CONS: consumes more memory due to repeatable column names; Poor support for special characters; not very splittable; lacks indexing;
+
+    - PARQUET: Unlike CSV and JSON, parquet files are binary files that contain metadata about their contents. Therefore, without reading/parsing the contents of the file(s), Spark can simply rely on metadata to determine column names, compression/encoding, data types, and even some basic statistical characteristics. Column metadata for a Parquet file is stored at the end of the file, which allows for fast, single-pass writing. they can be highly compressed (compression algorithms work better with data with low entropy of information, which is usually contained in columns) and can be separated. Parquet is optimized for the paradigm Write Once Read Many (WORM). It writes slowly but reads incredibly quickly, especially when you only access a subset of columns. Parquet is good choice for heavy workloads when reading portions of data.
+        
+        - PROS: Parquet is a columnar format. Only the required columns will be retrieved/read, this reduces disk I/O. The concept is called projection pushdown;scheme travels with the data, so the data is self-describing; Parquet provides very good compression up to 75% when using even compression formats like snappy;format is the fastest for read-heavy processes compared to other file formats; suited for data storage solutions where aggregation on a particular column over a huge set of data is required; provides predicate pushdown, thus reducing the further cost of transferring data from storage to the processing engine for filtering;
+        - CONS: does not always have built-in support in tools other than Spark;It does not support data modification (Parquet files are immutable) and scheme evolution. Of course, Spark knows how to combine the schema if you change it over time (you must specify a special option while reading), but you can only change something in an existing file by overwriting it.
+
+        - PREDICATE PUSHDOWN: certain parts of queries (predicates) can be "pushed" to where the data is stored. when we give some filtering criteria, the data storage tries to filter out the records at the time of reading. advantage is that there are fewer disk i/o operations and therefore overall performance is better. Otherwise, all data will be written to memory, and then filtering will have to be performed, resulting in higher memory requirements. This concept is followed by most DBMS, as well as big data storage formats such as Parquet and ORC.
+
+        - Projection Pushdown: When reading data from the data storage, only those columns that are required will be read, not all fields will be read. Typically, column formats such as Parquets and ORC follow this concept, resulting in better I/O performance.
+
+    - AVRO: row-based format that has a high degree of splitting. It is also described as a data serialization system similar to Java Serialization. The schema is stored in JSON format, while the data is stored in binary format, which minimizes file size and maximizes efficiency.support for schema evolution by managing added, missing, and changed fields. This allows old software to read new data, and new software to read old data — it is a critical feature if your data can change.Since Avro is a row-based format, it is the preferred format for handling large amounts of records as it is easy to add new rows.
+        - PROS: Avro stores the schema in a file header, so the data is self-describing;Easy and fast data serialization and deserialization, which can provide very good ingestion performance;As with the Sequence files, the Avro files also contain synchronization markers to separate blocks. This makes it highly splittable; schema used to read Avro files does not necessarily have to be the same as the one used to write the files. This allows new fields to be added independently of each other;Avro handles schema changes like missing fields, added fields, and changed fields. ;
+        - CONS: data is not human-readable; Not integrated into every programming language.
+    
+    - ORC: has many advantages such as: Hive type support including DateTime, decimal, and the complex types; Concurrent reads of the same file using separate RecordReaders; ability to split files without scanning for markers; Metadata stored using Protocol Buffers, which allows the addition and removal of fields; ORC file format stores collections of rows in one file and within the collection the row data is stored in a columnar format. An ORC file contains groups of row data called stripes and auxiliary information in a file footer. At the end of the file a postscript holds compression parameters and the size of the compressed footer.The default stripe size is 250 MB. Large stripe sizes enable large, efficient reads from HDFS.
+
+    - Avro is preferred for storing data in a data lake landing zone because from here we need to perform ETL operations for which row based format is more effecient. Also it is easy to retrieve the schema and handle schema changes.
+    - Parquet is good for queries that read particular columns from a “wide” (with many columns) table since only needed columns are read, and IO is minimized.
+    - PARQUET only supports schema append, whereas AVRO supports a much-featured schema evolution, i.e., adding or modifying columns.
+    - ORC vs. PARQUET
+        - PARQUET is more capable of storing nested data.
+        - ORC is more capable of Predicate Pushdown.
+        - ORC supports ACID properties.
+        - ORC is more compression efficient.
+
+
+    ![filetype comparison](https://miro.medium.com/max/700/1*0Frhzu__LfgEX99Ergb-Hg.png)
+
 
 - spark execution plan: https://medium.com/@omarlaraqui/a-beginners-guide-to-spark-execution-plan-b11f441005c9
 

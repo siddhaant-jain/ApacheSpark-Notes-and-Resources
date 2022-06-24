@@ -6,4 +6,6 @@
     - filter
     - reduce
 
-- finding sum o squares of 
+- python collections library (Counter, ordered_dict etc)
+- threading in python
+- basic OOPSs
