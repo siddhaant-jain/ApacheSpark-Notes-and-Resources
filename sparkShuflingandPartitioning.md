@@ -59,4 +59,27 @@
 -  Using Broadcasting and accumulators variables concept if there is requirement: Accumulators and Broadcast variables (a read only variable that is cached on all the executors to avoid shuffling of data between executors.) both are Spark-shared variables. Accumulators is a write /update shared variable whereas Broadcast is a read shared variable. 
 - Spills: Spill happens whenever there is Shuffle and the data has to be moved around and the executor is not able to hold the data in its memory. So it has to use the storage to save the data in disk for a certain time. When we don’t set right size partitions, we get spills. Always avoid Spills. In Simple terms, Spills is moving the data from in-memory to disk, we know that reading a data from disk incurs Disk I/O time. Default number of shuffle partitions in spark is 200. Take each partition holds 100 MB of data (recommended would be 100 or 200 MB of data for each partition)
 - Formula to calculate a optimal shuffle partition number: partition count= Total input file data size / each partition size; if (core count ≥ partition count) then set no of shuffle partitions should be partition count; else no of shuffle partitions should be a factor of the core count. Else we would be not utilizing the cores in the last run.
-- Bucketing: Similar to partitionBy, but uses hash function to find the bucket. or example if we have a table columns like id, state and few other columns read in a data frame, partition by can be applied on state column because we can group each state records into each partition. What if we have all unique data like id, in that case we need to use bucketing, where data’s are grouped based on the hash function. Finally, when we have a distinct column data in that case need to use bucketing and when we have duplicate data then in that case partition by helps. Partition By may create uneven partitions but bucketing creates even distribution of data. Bucketing can be used in Spark 3 to resolve the data shuffling problem to join multiple dataframe (explained in detail in second link).
+- **Bucketing**: Similar to partitionBy, but uses hash function to find the bucket. or example if we have a table columns like id, state and few other columns read in a data frame, partition by can be applied on state column because we can group each state records into each partition. What if we have all unique data like id, in that case we need to use bucketing, where data’s are grouped based on the hash function. Finally, when we have a distinct column data in that case need to use bucketing and when we have duplicate data then in that case partition by helps. Partition By may create uneven partitions but bucketing creates even distribution of data. Bucketing can be used in Spark 3 to resolve the data shuffling problem to join multiple dataframe (explained in detail in second link).
+
+### Spark Jobs: Stage, Shuffle, Tasks, Slots
+- Spark creates one job for each action.
+- This job may contain a series of multiple transformations.
+- The Spark engine will optimize those transformations and creates a logical plan for the job.
+- Then spark will break the logical plan at the end of every wide dependency and create two or more stages.
+- If you do not have a wide dependency, your plan will be a single-stage plan.
+- But if you have N wide-dependencies, your plan should have N+1 stages.
+- Data from one stage to another stage is shared using the shuffle/sort operation.
+- Now each stage may be executed as one or more parallel tasks.
+- The number of tasks in the stage is equal to the number of input partitions.
+- let’s assume I have 4 CPU cores to each executor. So, my Executor JVM can create four parallel threads and that’s the slot capacity of my executor. So, each executor can have four parallel threads, and we call them executor slots. The driver knows how many slots we have at each executor and it is going to assign tasks to fit in the executor slots.
+
+### Execution Plan
+- reference article: https://medium.com/data-engineering-on-cloud/advance-spark-concepts-for-job-interview-part-1-b7c2cadffc42
+- we may have Dataframe APIs, or you may have SQL both will go to the Spark SQL engine.For Spark, they are nothing but a Spark Job represented as a logical plan. The Spark SQL Engine will process your logical plan in four stages.
+![Catalyst Optimization](https://miro.medium.com/max/1400/0*0JBcGShY2b_05wrK.png)
+
+- The Analysis stage will parse your code for errors and incorrect names. The Analysis phase will parse your code and create a fully resolved logical plan. Your code is valid if it passes the Analysis phase.
+- The Logical Optimization phase applies standard rule-based optimizations to the logic plan.
+- Spark SQL takes a logical plan and generates one or more in the Physical Planning phase. Physical planning phase considers cost based optimization. So the engine will create multiple plans to calculate each plan’s cost and select the one with the low cost. At this stage the engine use different join algorithms to generate more than one physical plan.
+- The last stage is Code Generation. So, your best physical plan goes into code generation, the engine will generate Java byte code for the RDD operations, and that’s why Spark is also said to act as a compiler as it uses state of the art compiler technology for code generation to accelerate execution.
+
