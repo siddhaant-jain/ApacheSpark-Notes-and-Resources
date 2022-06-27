@@ -514,3 +514,5 @@ check repartition vs coalsce
 - spark execution plan: https://medium.com/@omarlaraqui/a-beginners-guide-to-spark-execution-plan-b11f441005c9
 
 - partitioning and bucketing: https://selectfrom.dev/apache-spark-partitioning-bucketing-3fd350816911
+
+- createTempView, createGlobalTempView

@@ -75,6 +75,7 @@
 
 ### Execution Plan
 - reference article: https://medium.com/data-engineering-on-cloud/advance-spark-concepts-for-job-interview-part-1-b7c2cadffc42
+- better explaining article (all below points are from first article): https://medium.com/@harun.raseed093/spark-logical-and-physical-plans-e111de6cc22e
 - we may have Dataframe APIs, or you may have SQL both will go to the Spark SQL engine.For Spark, they are nothing but a Spark Job represented as a logical plan. The Spark SQL Engine will process your logical plan in four stages.
 ![Catalyst Optimization](https://miro.medium.com/max/1400/0*0JBcGShY2b_05wrK.png)
 
