@@ -511,6 +511,41 @@ check repartition vs coalsce
     ![filetype comparison](https://miro.medium.com/max/700/1*0Frhzu__LfgEX99Ergb-Hg.png)
 
 
+### RDD vs Dataframes vs Datasets
+- reference article: https://medium.com/quantyca/apache-spark-how-to-choose-the-correct-data-abstraction-8df7c6d8ec63
+
+- RDD: 
+    - collection of data elements partitioned across the cluster nodes. DD can just be considered as a set of Java objects which supports two types of operations: transformation and actions.
+    - pros: Object-oriented and functional programming style; Low-level control on data; Compile-time type safety(Since Scala is a strongly typed language, Scala compiler is able to detect any type incompatibility yet at compile-time (Not same case in python))
+    - cons: Serialization and Garbage Collector issues; No built-in optimizations
+- Dataframes:
+    - A DataFrame is a dataset organized into named columns(equivalent to a table in a relational database or to a Pandas’ dataframe in Python).
+    - is a structured dataset of Row objects. A Row is a generic untyped Java object.
+    - DataFrames offer a higher level of abstraction than RDD. Dataframes can be treated as tables.
+    - DataFrames come out with a couple of optimizations: Catalyst query optimizer and Tungsten optimizer
+    - Catalyst query optimizer is an engine which interprets Spark code and builds an optimized logical and physical query plan.
+    - Tungsten optimizer implements the off-heap storage mechanism. It provides serialization into the off-heap storage so that transformations perform directly on this off-heap memory, avoiding serialization costs associated with standard Java or Kryo serializers. Also offers the whole-stage code generator, a component that converts the optimized physical plan into Java bytecode to be run on each executor.
+    - DataFrames are not type safe: type is checked only at runtime. For example, if you accidentally select the wrong column when writing a query plan with DataFrames, the compiler does not complain and the error is only detected when the application is run. 
+    - Pros: High-level of abstraction; Possibility to run SQL queries; Catalyst optimizers for query plans; Tungsten optimizer for serialization
+    - Cons: No object-oriented programming; Types inferred at runtime
+- Datasets:
+    - combines the benefits of RDDs and the power of Spark SQL engine. (Spark Datasets offer both the OOP interface for transformations and the SQL one to run queries.)
+    - a good choice when dealing with structured or semi-structured data (abular representation is automatically deduced by Spark as long as you provide the type of the single data object in a Scala case class.)
+    - Datasets has all optimization of DataFrames. Catalyst and Tungsten optimizers are still here, but it also has Encoders. An Encoder is used to encode (decode) any Java object to (from) Spark’s Row internal format. Through the generation of byte code used to interact with the off-heap data, the Encoder provides on-demand access to individual data attributes without deserializing the entire Java object. As a result, Spark Datasets gain in memory use and highly speed up program execution.
+    - Datasets suffer from Garbage Collector overhead when object serialization is necessary. Object serialization is strictly needed when map and filter operations are invoked with user-defined functions (UDFs).
+    - pros: Object-oriented programming style; Compile-time type safety; Possibility to run SQL queries;
+    Catalyst and Tungsten optimizers; Encoders to optimize serialization
+    - cons: Performance impact on UDFs; Garbage Collector overheads; Some features still experimental
+
+### Save modes
+- Append - the saved DataFrame is appended to already existent location
+- Overwrite - the files in the already existent location will be replaced by the new content
+- ErrorIfExists - an error (= AnalysisException) will be triggered. It's the mode used by default.
+- Ignore - if the saved location already exists, it's not overwritten
+
+
+- pyspark profilers: https://data-flair.training/blogs/pyspark-profiler/
+
 - spark execution plan: https://medium.com/@omarlaraqui/a-beginners-guide-to-spark-execution-plan-b11f441005c9
 
 - partitioning and bucketing: https://selectfrom.dev/apache-spark-partitioning-bucketing-3fd350816911
